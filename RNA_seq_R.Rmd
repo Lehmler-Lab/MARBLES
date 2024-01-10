@@ -51,8 +51,7 @@ library(enrichplot)
 library(clusterProfiler)
 library(pathview)
 library(readr)
-library(MuSiC)
-library(MuSiC2)
+#library(MuSiC2)
 library(ggpubr)
 library(ggsignif)
 library(rstatix)
@@ -260,13 +259,13 @@ summary(lres1)
 summary(lres2)
 summary(lres3)
 ```
+#liver up and down DEGs
 
 ```{r}
-sum(sres2$log2FoldChange >0.3 & sres2$padj< 0.1, na.rm=TRUE)
+sum(lres3$log2FoldChange >1 & lres3$padj< 0.1, na.rm=TRUE)
 
-sum(sres2$log2FoldChange < -0.3 & sres2$padj< 0.1, na.rm=TRUE)
+sum(lres3$log2FoldChange < -1 & lres3$padj< 0.1, na.rm=TRUE)
 ```
-
 
 ###annotating results
 
@@ -514,6 +513,13 @@ summary(sres3)
 sum(M_res$log2FoldChange > 1 & M_res$pvalue < 0.05, na.rm=TRUE)
 ```
 
+
+```{r}
+sum(sres3$log2FoldChange >0.3 & sres3$padj< 0.1, na.rm=TRUE)
+
+sum(sres3$log2FoldChange < -0.3 & sres3$padj< 0.1, na.rm=TRUE)
+```
+
 ##Annotating results
 How to assign actual gene names to our counts. Using an annotation package for Mus musculus. 
 ```{r}
@@ -742,9 +748,13 @@ Calling results without any arguments will extract the estimated log2 fold chang
 summary(pres1)
 summary(pres2)
 summary(pres3)
-sum(M_res$log2FoldChange > 1 & M_res$pvalue < 0.05, na.rm=TRUE)
-```
 
+```
+```{r}
+sum(pres1$log2FoldChange >0.3 & pres1$padj< 0.1, na.rm=TRUE)
+
+sum(pres1$log2FoldChange < -0.3 & pres1$padj< 0.1, na.rm=TRUE)
+```
 
 #***Annotating results***
 How to assign actual gene names to our counts. Using an annotation package for Mus musculus. 
@@ -911,17 +921,17 @@ tiff(file = 'volcano_plots/L_volcano_plot_6vsVeh.tiff', units="in", width=8, hei
 L1<- EnhancedVolcano(lres1,
     lab = lres1$symbol,
     x = 'log2FoldChange',
-    y = 'pvalue',
+    y = 'padj',
     title = "Liver",
     subtitle = "6 mg/kg",
     xlim = c(-7,7) ,
     ylim = c(0,18),
     FCcutoff = 1.0,
-    pCutoff = 0.05,
+    pCutoff = 0.1,
     labSize = 3.0,
     colAlpha = 1,
-    legendLabels=c('Not sig.','Log (base 2) FC','p-value',
-      'p-value & Log (base 2) FC'),
+    legendLabels=c('Not sig.','Log (base 2) FC','adj p-value',
+      'adj p-value & Log (base 2) FC'),
     legendPosition = 'right',
     legendLabSize = 12,
     legendIconSize = 3.0,
@@ -939,17 +949,17 @@ tiff(file = 'volcano_plots/L_volcano_plot_1vsVeh.tiff', units="in", width=8, hei
 L2<- EnhancedVolcano(lres2,
     lab = lres2$symbol,
     x = 'log2FoldChange',
-    y = 'pvalue',
+    y = 'padj',
     title = "Liver",
     subtitle = "1 mg/kg",
     xlim = c(-7,7) ,
     ylim = c(0,18),
     FCcutoff = 1.0,
-    pCutoff = 0.05,
+    pCutoff = 0.1,
     labSize = 3.0,
     colAlpha = 1,
-    legendLabels=c('Not sig.','Log (base 2) FC','p-value',
-      'p-value & Log (base 2) FC'),
+    legendLabels=c('Not sig.','Log (base 2) FC','adj p-value',
+      'adj p-value & Log (base 2) FC'),
     legendPosition = 'right',
     legendLabSize = 12,
     legendIconSize = 3.0,
@@ -967,17 +977,17 @@ tiff(file = 'volcano_plots/L_volcano_plot_0.1vsVeh.tiff', units="in", width=8, h
 L3<- EnhancedVolcano(lres3,
     lab = lres3$symbol,
     x = 'log2FoldChange',
-    y = 'pvalue',
+    y = 'padj',
     title = "Liver",
     subtitle = "0.1 mg/kg",
     xlim = c(-7,7) ,
     ylim = c(0,18),
     FCcutoff = 1.0,
-    pCutoff = 0.05,
+    pCutoff = 0.1,
     labSize = 3.0,
     colAlpha = 1,
-    legendLabels=c('Not sig.','Log (base 2) FC','p-value',
-      'p-value & Log (base 2) FC'),
+    legendLabels=c('Not sig.','Log (base 2) FC','adj p-value',
+      'adj p-value & Log (base 2) FC'),
     legendPosition = 'right',
     legendLabSize = 12,
     legendIconSize = 3.0,
@@ -997,19 +1007,19 @@ tiff(file = 'volcano_plots/P_volcano_plot_6vsVeh.tiff', units="in", width=8, hei
 p1<- EnhancedVolcano(pres1,
                      lab =pres1$symbol,
                      x = 'log2FoldChange',
-                     y = 'pvalue',
+                     y = 'padj',
                      title = "Prefrontal Cortex",
                     subtitle = "6 mg/kg",
-                     xlim = c(-7,7) ,
-                     ylim = c(0,7),
-                     FCcutoff = 1.0,
-                     pCutoff = 0.05,
+                     xlim = c(-2.5,2.5) ,
+                     ylim = c(0,4),
+                     FCcutoff = 0.3,
+                     pCutoff = 0.1,
                      labSize = 3.0,
                      colAlpha = 1,
                      legendLabels=c('Not sig.',
                                     'Log (base 2) FC',
-                                    'p-value',
-                                    'p-value & Log (base 2) FC'),
+                                    'adj p-value',
+                                    'adj p-value & Log (base 2) FC'),
                      legendPosition = 'right',
                      legendLabSize = 12,
                      legendIconSize = 3.0,
@@ -1028,19 +1038,19 @@ tiff(file = 'volcano_plots/P_volcano_plot_1vsVeh.tiff', units="in", width=8, hei
 p2<- EnhancedVolcano(pres2,
                      lab = pres2$symbol,
                      x = 'log2FoldChange',
-                     y = 'pvalue',
+                      y = 'padj',
                      title = "Prefrontal Cortex",
-                     subtitle = "1 mg/kg",
-                     xlim = c(-7,7) ,
-                     ylim = c(0,7),
-                     FCcutoff = 1.0,
-                     pCutoff = 0.05,
+                    subtitle = "1 mg/kg",
+                     xlim = c(-2.5,2.5) ,
+                     ylim = c(0,4),
+                     FCcutoff = 0.3,
+                     pCutoff = 0.1,
                      labSize = 3.0,
                      colAlpha = 1,
                      legendLabels=c('Not sig.',
                                     'Log (base 2) FC',
-                                    'p-value',
-                                    'p-value & Log (base 2) FC'),
+                                    'adj p-value',
+                                    'adj p-value & Log (base 2) FC'),
                      legendPosition = 'right',
                      legendLabSize = 12,
                      legendIconSize = 3.0,
@@ -1058,19 +1068,19 @@ tiff(file = 'volcano_plots/P_volcano_plot_0.1vsVeh.tiff', units="in", width=8, h
 p3<- EnhancedVolcano(pres3,
                      lab = pres3$symbol,
                      x = 'log2FoldChange',
-                     y = 'pvalue',
+                      y = 'padj',
                      title = "Prefrontal Cortex",
-                     subtitle = "0.1 mg/kg",
-                     xlim = c(-7,7) ,
-                     ylim = c(0,7),
-                     FCcutoff = 1.0,
-                     pCutoff = 0.05,
+                    subtitle = "0.1 mg/kg",
+                     xlim = c(-2.5,2.5) ,
+                     ylim = c(0,4),
+                     FCcutoff = 0.3,
+                     pCutoff = 0.1,
                      labSize = 3.0,
                      colAlpha = 1,
                      legendLabels=c('Not sig.',
                                     'Log (base 2) FC',
-                                    'p-value',
-                                    'p-value & Log (base 2) FC'),
+                                    'adj p-value',
+                                    'adj p-value & Log (base 2) FC'),
                      legendPosition = 'right',
                      legendLabSize = 12,
                      legendIconSize = 3.0,
@@ -1090,18 +1100,20 @@ tiff(file = 'volcano_plots/S_volcano_plot_6vsVeh.tiff', units="in", width=8, hei
 s1<-EnhancedVolcano(sres1,
     lab = sres1$symbol,
     x = 'log2FoldChange',
-    y = 'pvalue',
-    title = "Striatum",
-    subtitle = "6 mg/kg",
-    xlim = c(-7,7) ,
-    ylim = c(0,7),
-    FCcutoff = 1.0,
-    pCutoff = 0.05,
-    labSize = 3.0,
-    colAlpha = 1,
-    legendLabels=c('Not sig.','Log (base 2) FC','p-value',
-      'p-value & Log (base 2) FC'),
-    legendPosition = 'right',
+ y = 'padj',
+                     title = "Striatum",
+                    subtitle = "6 mg/kg",
+                     xlim = c(-3,3) ,
+                     ylim = c(0,2),
+                     FCcutoff = 0.3,
+                     pCutoff = 0.1,
+                     labSize = 3.0,
+                     colAlpha = 1,
+                     legendLabels=c('Not sig.',
+                                    'Log (base 2) FC',
+                                    'adj p-value',
+                                    'adj p-value & Log (base 2) FC'),
+                     legendPosition = 'right',
     legendLabSize = 12,
     legendIconSize = 3.0,
     gridlines.major = FALSE,
@@ -1118,18 +1130,20 @@ tiff(file = 'volcano_plots/S_volcano_plot_1vsVeh.tiff', units="in", width=8, hei
 s2<-EnhancedVolcano(sres2,
     lab = sres2$symbol,
     x = 'log2FoldChange',
-    y = 'pvalue',
-    title = "Striatum",
-    subtitle = "1 mg/kg",
-    xlim = c(-7,7) ,
-    ylim = c(0,7),
-    FCcutoff = 1.0,
-    pCutoff = 0.05,
-    labSize = 3.0,
-    colAlpha = 1,
-    legendLabels=c('Not sig.','Log (base 2) FC','p-value',
-      'p-value & Log (base 2) FC'),
-    legendPosition = 'right',
+    y = 'padj',
+                     title = "Striatum",
+                    subtitle = "1 mg/kg",
+                     xlim = c(-3,3) ,
+                     ylim = c(0,2),
+                     FCcutoff = 0.3,
+                     pCutoff = 0.1,
+                     labSize = 3.0,
+                     colAlpha = 1,
+                     legendLabels=c('Not sig.',
+                                    'Log (base 2) FC',
+                                    'adj p-value',
+                                    'adj p-value & Log (base 2) FC'),
+                     legendPosition = 'right',
     legendLabSize = 12,
     legendIconSize = 3.0,
     gridlines.major = FALSE,
@@ -1146,18 +1160,20 @@ tiff(file = 'volcano_plots/S_volcano_plot_0.1vsVeh.tiff', units="in", width=8, h
 s3<-EnhancedVolcano(sres3,
     lab = sres3$symbol,
     x = 'log2FoldChange',
-    y = 'pvalue',
-    title = "Striatum",
-    subtitle = "0.1 mg/kg",
-    xlim = c(-7,7) ,
-    ylim = c(0,7),
-    FCcutoff = 1.0,
-    pCutoff = 0.05,
-    labSize = 3.0,
-    colAlpha = 1,
-    legendLabels=c('Not sig.','Log (base 2) FC','p-value',
-      'p-value & Log (base 2) FC'),
-    legendPosition = 'right',
+y = 'padj',
+                     title = "Striatum",
+                    subtitle = "0.1 mg/kg",
+                     xlim = c(-3,3) ,
+                     ylim = c(0,2),
+                     FCcutoff = 0.3,
+                     pCutoff = 0.1,
+                     labSize = 3.0,
+                     colAlpha = 1,
+                     legendLabels=c('Not sig.',
+                                    'Log (base 2) FC',
+                                    'adj p-value',
+                                    'adj p-value & Log (base 2) FC'),
+                     legendPosition = 'right',
     legendLabSize = 12,
     legendIconSize = 3.0,
     gridlines.major = FALSE,
@@ -1175,6 +1191,7 @@ s3
 inputList <- list(rankedGenes1 = genes, rankedGenes2 = genes2)
 test.out <- compareCluster(geneClusters=inputList,  fun = "gseKEGG", pvalueCutoff = 0.05, pAdjustMethod = "none")
 ```
+
 ```{r}
 dotplot(test.out, showCategory=5, split=".sign") + facet_grid(.~.sign)
 ```
