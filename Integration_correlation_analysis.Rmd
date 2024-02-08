@@ -1,0 +1,331 @@
+---
+title: "multiOmics integration"
+output: html_notebook
+---
+
+
+```{r}
+#BiocManager::install("microbiome")
+```
+
+```{r}
+library(reshape2)
+library(corrplot)
+library(MASS)
+library(car)
+library(lattice)
+library(microbiome)
+library(pheatmap)
+```
+
+```{r}
+pcb.level <- read.csv("PCB_levels_for_integration.csv", na = "0")
+pcb.level$exposure<-factor(pcb.level$exposure)
+pcb.level$Tissue<-factor(pcb.level$Tissue)
+```
+
+```{r}
+plotcor = function(mydata, title){
+  nn = nrow(mydata)
+  x <- as.matrix(mydata[, -(1:42)]) 
+  y <- as.matrix(mydata[, 4:42])
+  cor.matrix = cor(x, y, method="spearman", use = "pairwise.complete.obs")
+  write.csv(cor.matrix, file = paste(title, ".csv", sep=""))
+}
+
+```
+
+```{r}
+raw<-read.csv("Results_spreadsheets/Liv_counts_for_integration.csv")
+
+df1<-raw[ 1]
+df2<-raw[,2:23]
+raw<-df2[df2$Genes %in% df1$DEGs,]
+names(raw)<-NULL
+```
+
+```{r}
+######################### Liver #########################
+ids = read.csv("Results_spreadsheets/Liv_counts_for_integration.csv", header = FALSE, nrows = 1)
+ids<- ids[3:23]
+#raw = read.csv("Results_spreadsheets/Liv_counts_for_integration.csv", header = FALSE, skip = 1)
+micro = as.data.frame(t(raw[,-1]))
+names(micro) <- raw[,1]
+micro$Animal_ID = t(ids)
+mydata = merge(pcb.level, micro, by="Animal_ID")
+
+#plotcor(subset(mydata, exposure == "veh"), title = "Liver Veh")
+plotcor(subset(mydata, Tissue == "liver" & exposure == "0.1"), title = "Liver 0.1 mg_kg")
+plotcor(subset(mydata, Tissue == "liver" &exposure == "1"), title = "Liver 1 mg_kg")
+plotcor(subset(mydata,Tissue == "liver" &  exposure == "6"), title = "Liver 6 mg_kg")
+```
+
+
+###Plotting results
+####Heatmap
+Heatmaps are a good way to visualize the most significant genes
+```{r}
+L_A<- read.csv("Liver 0.1 mg_kg.csv")
+L_A<-melt(L_A, na.rm = TRUE)
+
+```
+
+```{r}
+tiff(file = "Liver_0.1_correlation_heatmap.tiff", units="in", width=8, height=5, res=1000)
+heat<- heat(L_A, "X", "variable", 
+            fill = "value" ,
+            order.cols = TRUE,
+            order.rows = TRUE
+            )+
+  ggtitle("Liver 0.1 mg/kg correlation")+
+  theme(text=element_text(size=5), 
+        axis.text.x = element_text(angle = 45, hjust = 1), 
+        legend.key.size = unit(0.3, "cm"))
+heat 
+
+dev.off()
+
+heat
+
+```
+
+```{r}
+L_A<- read.csv("Liver 1 mg_kg.csv")
+L_A<-melt(L_A, na.rm = TRUE)
+
+```
+```{r}
+tiff(file = "Liver_1_correlation_heatmap.tiff", units="in", width=8, height=5, res=1000)
+heat<- heat(L_A, "X", "variable", 
+            fill = "value" ,
+            order.cols = TRUE,
+            order.rows = TRUE
+            )+
+  ggtitle("Liver 1 mg/kg correlation")+
+  theme(text=element_text(size=5), 
+        axis.text.x = element_text(angle = 45, hjust = 1), 
+        legend.key.size = unit(0.3, "cm"))
+heat 
+
+dev.off()
+
+heat
+
+```
+```{r}
+L_A<- read.csv("Liver 6 mg_kg.csv")
+L_A<-melt(L_A, na.rm = TRUE)
+
+```
+```{r}
+tiff(file = "Liver_6_correlation_heatmap.tiff", units="in", width=8, height=5, res=1000)
+heat<- heat(L_A, "X", "variable", 
+            fill = "value" ,
+            order.cols = TRUE,
+            order.rows = TRUE
+            )+
+  ggtitle("Liver 6 mg/kg correlation")+
+  theme(text=element_text(size=5), 
+        axis.text.x = element_text(angle = 45, hjust = 1), 
+        legend.key.size = unit(0.3, "cm"))
+heat 
+
+dev.off()
+
+heat
+
+```
+
+```{r}
+######################### Prefrontal Cortex #########################
+ids = read.csv("Results_spreadsheets/PFC_counts_for_integration.csv", header = FALSE, nrows = 1)
+ids<- ids[3:23]
+#raw = read.csv("Results_spreadsheets/Liv_counts_for_integration.csv", header = FALSE, skip = 1)
+micro = as.data.frame(t(raw[,-1]))
+names(micro) <- raw[,1]
+micro$Animal_ID = t(ids)
+mydata = merge(pcb.level, micro, by="Animal_ID")
+
+#plotcor(subset(mydata, exposure == "veh"), title = "Liver Veh")
+plotcor(subset(mydata, Tissue =="brain" & exposure == "0.1"), title = "PFC 0.1 mg_kg")
+plotcor(subset(mydata,Tissue =="brain" &  exposure == "1"), title = "PFC 1 mg_kg")
+plotcor(subset(mydata,Tissue =="brain" &  exposure == "6"), title = "PFC 6 mg_kg")
+```
+
+
+###Plotting results
+####Heatmap
+Heatmaps are a good way to visualize the most significant genes
+```{r}
+L_A<- read.csv("PFC 0.1 mg_kg.csv")
+L_A<-melt(L_A, na.rm = TRUE)
+
+```
+
+```{r}
+tiff(file = "PFC_0.1_correlation_heatmap.tiff", units="in", width=8, height=5, res=1000)
+heat<- heat(L_A, "X", "variable", 
+            fill = "value" ,
+            order.cols = TRUE,
+            order.rows = TRUE
+            )+
+  ggtitle("PFC 0.1 mg/kg correlation")+
+  theme(text=element_text(size=5), 
+        axis.text.x = element_text(angle = 45, hjust = 1), 
+        legend.key.size = unit(0.3, "cm"))
+heat 
+
+dev.off()
+
+heat
+
+```
+
+Heatmaps are a good way to visualize the most significant genes
+```{r}
+L_A<- read.csv("PFC 1 mg_kg.csv")
+L_A<-melt(L_A, na.rm = TRUE)
+
+```
+
+```{r}
+tiff(file = "PFC_1_correlation_heatmap.tiff", units="in", width=8, height=5, res=1000)
+heat<- heat(L_A, "X", "variable", 
+            fill = "value" ,
+            order.cols = TRUE,
+            order.rows = TRUE
+            )+
+  ggtitle("PFC 1 mg/kg correlation")+
+  theme(text=element_text(size=5), 
+        axis.text.x = element_text(angle = 45, hjust = 1), 
+        legend.key.size = unit(0.3, "cm"))
+heat 
+
+dev.off()
+
+heat
+
+```
+
+Heatmaps are a good way to visualize the most significant genes
+```{r}
+L_A<- read.csv("PFC 6 mg_kg.csv")
+L_A<-melt(L_A, na.rm = TRUE)
+
+```
+
+```{r}
+tiff(file = "PFC_6_correlation_heatmap.tiff", units="in", width=8, height=5, res=1000)
+heat<- heat(L_A, "X", "variable", 
+            fill = "value" ,
+            order.cols = TRUE,
+            order.rows = TRUE
+            )+
+  ggtitle("PFC 6 mg/kg correlation")+
+  theme(text=element_text(size=5), 
+        axis.text.x = element_text(angle = 45, hjust = 1), 
+        legend.key.size = unit(0.3, "cm"))
+heat 
+
+dev.off()
+
+heat
+
+```
+
+```{r}
+######################### Striatum #########################
+ids = read.csv("Results_spreadsheets/STN_counts_for_integration.csv", header = FALSE, nrows = 1)
+ids<- ids[3:23]
+#raw = read.csv("Results_spreadsheets/Liv_counts_for_integration.csv", header = FALSE, skip = 1)
+micro = as.data.frame(t(raw[,-1]))
+names(micro) <- raw[,1]
+micro$Animal_ID = t(ids)
+mydata = merge(pcb.level, micro, by="Animal_ID")
+
+#plotcor(subset(mydata, exposure == "veh"), title = "Liver Veh")
+plotcor(subset(mydata, Tissue =="brain" & exposure == "0.1"), title = "STN 0.1 mg_kg")
+plotcor(subset(mydata,Tissue =="brain" &  exposure == "1"), title = "STN 1 mg_kg")
+plotcor(subset(mydata,Tissue =="brain" &  exposure == "6"), title = "STN 6 mg_kg")
+```
+
+
+###Plotting results
+####Heatmap
+Heatmaps are a good way to visualize the most significant genes
+```{r}
+L_A<- read.csv("STN 0.1 mg_kg.csv")
+L_A<-melt(L_A, na.rm = TRUE)
+
+```
+
+```{r}
+tiff(file = "STN_0.1_correlation_heatmap.tiff", units="in", width=8, height=5, res=1000)
+heat<- heat(L_A, "X", "variable", 
+            fill = "value" ,
+            order.cols = TRUE,
+            order.rows = TRUE
+            )+
+  ggtitle("STN 0.1 mg/kg correlation")+
+  theme(text=element_text(size=5), 
+        axis.text.x = element_text(angle = 45, hjust = 1), 
+        legend.key.size = unit(0.3, "cm"))
+heat 
+
+dev.off()
+
+heat
+
+```
+
+Heatmaps are a good way to visualize the most significant genes
+```{r}
+L_A<- read.csv("STN 1 mg_kg.csv")
+L_A<-melt(L_A, na.rm = TRUE)
+
+```
+
+```{r}
+tiff(file = "STN_1_correlation_heatmap.tiff", units="in", width=8, height=5, res=1000)
+heat<- heat(L_A, "X", "variable", 
+            fill = "value" ,
+            order.cols = TRUE,
+            order.rows = TRUE
+            )+
+  ggtitle("STN 1 mg/kg correlation")+
+  theme(text=element_text(size=5), 
+        axis.text.x = element_text(angle = 45, hjust = 1), 
+        legend.key.size = unit(0.3, "cm"))
+heat 
+
+dev.off()
+
+heat
+
+```
+
+Heatmaps are a good way to visualize the most significant genes
+```{r}
+L_A<- read.csv("STN 6 mg_kg.csv")
+L_A<-melt(L_A, na.rm = TRUE)
+
+```
+
+```{r}
+tiff(file = "STN_6_correlation_heatmap.tiff", units="in", width=8, height=5, res=1000)
+heat<- heat(L_A, "X", "variable", 
+            fill = "value" ,
+            order.cols = TRUE,
+            order.rows = TRUE
+            )+
+  ggtitle("STN 6 mg/kg correlation")+
+  theme(text=element_text(size=5), 
+        axis.text.x = element_text(angle = 45, hjust = 1), 
+        legend.key.size = unit(0.3, "cm"))
+heat 
+
+dev.off()
+
+heat
+
+```
